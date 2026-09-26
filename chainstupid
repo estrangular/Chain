@@ -216,7 +216,7 @@ local combatStamOn,normalStamOn=false,false
 local winchesterOn=false
 local smartQTEOn=false;local smartThread=nil
 local qteNormalDelay=0.30
-local QTE_XSAW_PREDELAY=0.30
+local QTE_XSAW_PREDELAY=0.45
 local QTE_XSAW_STUCK=4.0
 local QTE_WINCHESTER_DELAY=0.12
 local QTE_WINCHESTER_PREDELAY=0.15
