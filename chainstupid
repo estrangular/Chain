@@ -218,7 +218,7 @@ local smartQTEOn=false;local smartThread=nil
 local qteNormalDelay=0.30
 local QTE_XSAW_PREDELAY=0.30
 local QTE_XSAW_STUCK=4.0
-local QTE_WINCHESTER_DELAY=0.08
+local QTE_WINCHESTER_DELAY=0.12
 local QTE_WINCHESTER_PREDELAY=0.15
 local QTE_WINCHESTER_TOMA_GATE=0.08
 local artifactsOn=false;local artifactsConn=nil
