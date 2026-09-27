@@ -914,7 +914,7 @@ local CT=win:Tab("Combat","sword")
 
 local qs=CT:Section("Smart QTE","Left")
 qs:Toggle("Enable Smart QTE",false,function(o)setSmartQTE(o)end)
-qs:Slider("Normal Delay",0.10,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
+qs:Slider("Normal Delay",0.25,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
 
 local ads=CT:Section("AutoDodge","Left")
 ads:Toggle("Auto Dodge",false,function(o)setAutoDodge(o)end)
