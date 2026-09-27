@@ -213,12 +213,13 @@ print("[Chain] Offsets source: ".._offSource.." | Roblox: "..tostring(O.ClientVe
 local combatStamOn,normalStamOn=false,false
 local winchesterOn=false
 local smartQTEOn=false;local smartThread=nil
-local qteNormalDelay=0.25
-local QTE_XSAW_PREDELAY=0.38
+local qteNormalDelay=0.270
+local QTE_XSAW_PREDELAY=0.40
 local QTE_XSAW_STUCK=4.0
 local QTE_WINCHESTER_DELAY=0.12
 local QTE_WINCHESTER_PREDELAY=0.15
 local QTE_WINCHESTER_TOMA_GATE=0.08
+local QTE_WINCHESTER_TOMA_STALE=0.50
 local artifactsOn=false;local artifactsConn=nil
 local autoDodgeOn=false
 local autoDodgeThread=nil
@@ -389,6 +390,7 @@ local function smartQTELoop()
   local winXSawAt=0
   local winXSawEmptyAt=0
   local winTomaLast=""
+  local winTomaStale=""
   local winTomaPending=false
   local xsawLetterNow=""
   local xsawLetterAt=0
@@ -421,6 +423,7 @@ local function smartQTELoop()
     winXSawAt=0
     winXSawEmptyAt=0
     winTomaLast=""
+    winTomaStale=""
     winTomaPending=false
     xsawLetterNow=""
     xsawLetterAt=0
@@ -438,6 +441,7 @@ local function smartQTELoop()
     winXSawAt=0
     winXSawEmptyAt=0
     winTomaLast=""
+    winTomaStale=""
     winTomaPending=false
     xsawLetterNow=""
     xsawLetterAt=0
@@ -458,6 +462,7 @@ local function smartQTELoop()
       winXSawEmptyAt=0
       winTomaLast=""
       winTomaPending=false
+      winTomaStale=""
       if tx~=winXSawLast then
        winXSawLast=tx
        winXSawAt=tick()
@@ -478,36 +483,41 @@ local function smartQTELoop()
      elseif tt~=""then
       if winXSawEmptyAt==0 then
        winXSawEmptyAt=tick()
+       winTomaStale=winXSawLast
        _QTE.lastClickLetter=""
        _QTE.lastClickWeapon=""
        _QTE.retryPending=false
        _QTE.retryKey=nil
        _QTE.retryLetter=""
       end
-      local gateOk=(tick()-winXSawEmptyAt)>=QTE_WINCHESTER_TOMA_GATE
-      if gateOk and tt~=winTomaLast and not winTomaPending then
-       local k=QTE_KEYMAP[tt:sub(1,1)]
-       if k then
-        winTomaPending=true
-        local expected=tt
-        local reaction=0.10+(math.random()*math.random()*0.10)
-        spawn(function()
-         wait(reaction)
-         winTomaPending=false
-         if not smartQTEOn then return end
-         if not getClashState() then return end
-         if getXSawQTEText()~="" then return end
-         local cur=getNormalQTEText()
-         if cur=="" then return end
-         if cur~=expected then return end
-         local kk=QTE_KEYMAP[cur:sub(1,1)]
-         if not kk then return end
-         winTomaLast=cur
-         _clickKey(kk)
-         _QTE.lastClickAt=tick()
-         _QTE.lastClickLetter=cur
-         _QTE.lastClickWeapon="winchester"
-        end)
+      local emptyAge=tick()-winXSawEmptyAt
+      local gateOk=emptyAge>=QTE_WINCHESTER_TOMA_GATE
+      if gateOk and not winTomaPending and tt~=winTomaLast then
+       local isStale=(tt==winTomaStale) and (emptyAge<QTE_WINCHESTER_TOMA_STALE)
+       if not isStale then
+        local k=QTE_KEYMAP[tt:sub(1,1)]
+        if k then
+         winTomaPending=true
+         local expected=tt
+         local reaction=0.10+(math.random()*math.random()*0.10)
+         spawn(function()
+          wait(reaction)
+          winTomaPending=false
+          if not smartQTEOn then return end
+          if not getClashState() then return end
+          if getXSawQTEText()~="" then return end
+          local cur=getNormalQTEText()
+          if cur=="" then return end
+          if cur~=expected then return end
+          local kk=QTE_KEYMAP[cur:sub(1,1)]
+          if not kk then return end
+          winTomaLast=cur
+          _clickKey(kk)
+          _QTE.lastClickAt=tick()
+          _QTE.lastClickLetter=cur
+          _QTE.lastClickWeapon="winchester"
+         end)
+        end
        end
       end
      else
@@ -515,6 +525,7 @@ local function smartQTELoop()
       winXSawAt=0
       winXSawEmptyAt=0
       winTomaLast=""
+      winTomaStale=""
       winTomaPending=false
      end
      wait(QTE_WINCHESTER_DELAY)
@@ -559,9 +570,8 @@ local function smartQTELoop()
       if k then
        normLast=t
        local expectedLetter=t
-       local delay = 0.03 + math.random()*0.05
        spawn(function()
-        wait(delay)
+        wait(qteNormalDelay)
         if not smartQTEOn then return end
         if not getClashState() then return end
         _clickKey(k)
@@ -930,7 +940,7 @@ local CT=win:Tab("Combat","sword")
 
 local qs=CT:Section("Smart QTE","Left")
 qs:Toggle("Enable Smart QTE",false,function(o)setSmartQTE(o)end)
-qs:Slider("Normal Delay",0.10,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
+qs:Slider("Normal Delay",0.270,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
 
 local ads=CT:Section("AutoDodge","Left")
 ads:Toggle("Auto Dodge",false,function(o)setAutoDodge(o)end)
