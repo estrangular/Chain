@@ -386,10 +386,10 @@ local function smartQTELoop()
  smartThread=spawn(function()
   local normLast=nil
   local winXSawLast=""
-  local winXSawLastLetter=""
   local winXSawAt=0
   local winXSawEmptyAt=0
   local winTomaLast=""
+  local winTomaPending=false
   local xsawLetterNow=""
   local xsawLetterAt=0
   local xsawFirstClick=false
@@ -418,10 +418,10 @@ local function smartQTELoop()
    if _QTE.forceReset then
     normLast=nil
     winXSawLast=""
-    winXSawLastLetter=""
     winXSawAt=0
     winXSawEmptyAt=0
     winTomaLast=""
+    winTomaPending=false
     xsawLetterNow=""
     xsawLetterAt=0
     xsawFirstClick=false
@@ -435,10 +435,10 @@ local function smartQTELoop()
    if not getClashState()then
     normLast=nil
     winXSawLast=""
-    winXSawLastLetter=""
     winXSawAt=0
     winXSawEmptyAt=0
     winTomaLast=""
+    winTomaPending=false
     xsawLetterNow=""
     xsawLetterAt=0
     xsawFirstClick=false
@@ -453,12 +453,14 @@ local function smartQTELoop()
     local w=detectWeapon()
     if w=="winchester"then
      local tx=getXSawQTEText()
+     local tt=getNormalQTEText()
      if tx~=""then
+      winXSawEmptyAt=0
+      winTomaLast=""
+      winTomaPending=false
       if tx~=winXSawLast then
        winXSawLast=tx
-       winXSawLastLetter=tx
        winXSawAt=tick()
-       winXSawEmptyAt=0
       end
       if (tick()-winXSawAt)>=QTE_WINCHESTER_PREDELAY then
        local k=QTE_KEYMAP[tx:sub(1,1)]
@@ -473,40 +475,47 @@ local function smartQTELoop()
         _QTE.lastClickWeapon="winchester"
        end
       end
-      winTomaLast=""
+     elseif tt~=""then
+      if winXSawEmptyAt==0 then
+       winXSawEmptyAt=tick()
+       _QTE.lastClickLetter=""
+       _QTE.lastClickWeapon=""
+       _QTE.retryPending=false
+       _QTE.retryKey=nil
+       _QTE.retryLetter=""
+      end
+      local gateOk=(tick()-winXSawEmptyAt)>=QTE_WINCHESTER_TOMA_GATE
+      if gateOk and tt~=winTomaLast and not winTomaPending then
+       local k=QTE_KEYMAP[tt:sub(1,1)]
+       if k then
+        winTomaPending=true
+        local expected=tt
+        local reaction=0.10+(math.random()*math.random()*0.10)
+        spawn(function()
+         wait(reaction)
+         winTomaPending=false
+         if not smartQTEOn then return end
+         if not getClashState() then return end
+         if getXSawQTEText()~="" then return end
+         local cur=getNormalQTEText()
+         if cur=="" then return end
+         if cur~=expected then return end
+         local kk=QTE_KEYMAP[cur:sub(1,1)]
+         if not kk then return end
+         winTomaLast=cur
+         _clickKey(kk)
+         _QTE.lastClickAt=tick()
+         _QTE.lastClickLetter=cur
+         _QTE.lastClickWeapon="winchester"
+        end)
+       end
+      end
      else
       winXSawLast=""
       winXSawAt=0
-      if winXSawEmptyAt==0 then
-       winXSawEmptyAt=tick()
-      end
-      local gateOk=(tick()-winXSawEmptyAt)>=QTE_WINCHESTER_TOMA_GATE
-      if gateOk then
-       local tt=getNormalQTEText()
-       if tt==""then
-        winTomaLast=""
-       elseif tt~=winXSawLastLetter and tt~=winTomaLast then
-        local k=QTE_KEYMAP[tt:sub(1,1)]
-        if k then
-         winTomaLast=tt
-         local reaction = 0.13 + (math.random() * math.random() * 0.13)
-         spawn(function()
-          wait(reaction)
-          if not smartQTEOn then return end
-          if not getClashState() then return end
-          local cur=getNormalQTEText()
-          if cur=="" then return end
-          if cur~=tt then return end
-          local kk=QTE_KEYMAP[cur:sub(1,1)]
-          if not kk then return end
-          _clickKey(kk)
-          _QTE.lastClickAt=tick()
-          _QTE.lastClickLetter=cur
-          _QTE.lastClickWeapon="winchester"
-         end)
-        end
-       end
-      end
+      winXSawEmptyAt=0
+      winTomaLast=""
+      winTomaPending=false
      end
      wait(QTE_WINCHESTER_DELAY)
     elseif w=="xsaw"then
@@ -608,6 +617,13 @@ local function watchdogLoop()
   end
 
   if w=="normal" then
+   _QTE.lastClickLetter=""
+   _QTE.lastClickWeapon=""
+   _QTE.retryPending=false
+   return
+  end
+
+  if w=="winchester" and getXSawQTEText()=="" then
    _QTE.lastClickLetter=""
    _QTE.lastClickWeapon=""
    _QTE.retryPending=false
@@ -914,7 +930,7 @@ local CT=win:Tab("Combat","sword")
 
 local qs=CT:Section("Smart QTE","Left")
 qs:Toggle("Enable Smart QTE",false,function(o)setSmartQTE(o)end)
-qs:Slider("Normal Delay",0.25,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
+qs:Slider("Normal Delay",0.10,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
 
 local ads=CT:Section("AutoDodge","Left")
 ads:Toggle("Auto Dodge",false,function(o)setAutoDodge(o)end)
