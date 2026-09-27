@@ -139,7 +139,6 @@ local function _satt(p,n,v) if not p then return end p[_S_.SAT](p,n,v) end
 local function _isa(p,c) if not p then return false end return p[_S_.ISA](p,c) end
 local function _disco(c) if c then pcall(function() c[_S_.DIS](c) end) end end
 
-
 local _offCache=nil
 local _offSource="fallback"
 
@@ -211,12 +210,11 @@ local OFF_TRACK_TIMEPOS=O.AnimationTrack.TimePosition or 0xc8
 local OFF_ANIM_ANIMID=0xb0
 print("[Chain] Offsets source: ".._offSource.." | Roblox: "..tostring(O.ClientVersion or "?"))
 
-
 local combatStamOn,normalStamOn=false,false
 local winchesterOn=false
 local smartQTEOn=false;local smartThread=nil
-local qteNormalDelay=0.30
-local QTE_XSAW_PREDELAY=0.35
+local qteNormalDelay=0.18
+local QTE_XSAW_PREDELAY=0.38
 local QTE_XSAW_STUCK=4.0
 local QTE_WINCHESTER_DELAY=0.12
 local QTE_WINCHESTER_PREDELAY=0.15
@@ -347,7 +345,6 @@ local function detectWeapon()
  return nil
 end
 
-
 local function _onCharacterAdded()
  statsRef=nil
  winchesterBarRef=nil
@@ -375,7 +372,6 @@ pcall(function()
  end)
 end)
 
-
 local QTE_KEYMAP={F=70,R=82,E=69,G=71,T=84}
 
 local function _clickKey(k)
@@ -401,7 +397,6 @@ local function smartQTELoop()
   while smartQTEOn do
    _QTE.threadAlive=tick()
 
-   -- retry queue (watchdog) — v15.5: só executa se ClashState ainda for true
    if _QTE.retryPending then
     local rLetter=_QTE.retryLetter
     local rWeapon=_QTE.retryWeapon
@@ -448,7 +443,6 @@ local function smartQTELoop()
     xsawLetterAt=0
     xsawFirstClick=false
     xsawStuckClick=false
-    -- v15.5: limpa também lastClick/retry pra não disparar clique fantasma
     _QTE.lastClickLetter=""
     _QTE.lastClickWeapon=""
     _QTE.retryPending=false
@@ -458,7 +452,6 @@ local function smartQTELoop()
    else
     local w=detectWeapon()
     if w=="winchester"then
-     -- Fase 1: QTEXSaw (3 letras) — 150ms predelay + spam a cada 80ms
      local tx=getXSawQTEText()
      if tx~=""then
       if tx~=winXSawLast then
@@ -500,7 +493,6 @@ local function smartQTELoop()
          spawn(function()
           wait(reaction)
           if not smartQTEOn then return end
-          -- v15.5: gate do ClashState aqui também
           if not getClashState() then return end
           local cur=getNormalQTEText()
           if cur=="" then return end
@@ -558,15 +550,11 @@ local function smartQTELoop()
       if k then
        normLast=t
        local expectedLetter=t
-       local jitter = (math.random() * 0.16) - 0.04
-       local actualDelay = math.max(0.05, qteNormalDelay + jitter)
+       local delay = 0.03 + math.random()*0.05
        spawn(function()
-        if actualDelay>0 then wait(actualDelay)end
-        if not smartQTEOn or not getClashState()then return end
-        local curLetter=getNormalQTEText()
-        if curLetter~=expectedLetter then
-         return
-        end
+        wait(delay)
+        if not smartQTEOn then return end
+        if not getClashState() then return end
         _clickKey(k)
         _QTE.lastClickAt=tick()
         _QTE.lastClickLetter=expectedLetter
@@ -595,7 +583,6 @@ local function watchdogLoop()
  if _watchdogConn then return end
  _watchdogConn=RunService[_S_.Heartbeat]:Connect(function()
   if not smartQTEOn then return end
-  -- v15.5: bail cedo se não está em clash
   if not getClashState() then
    _QTE.lastClickLetter=""
    _QTE.lastClickWeapon=""
@@ -616,6 +603,13 @@ local function watchdogLoop()
    _QTE.lastWeapon=w
    _QTE.forceReset=true
    _QTE.lastClickLetter=""
+   _QTE.retryPending=false
+   return
+  end
+
+  if w=="normal" then
+   _QTE.lastClickLetter=""
+   _QTE.lastClickWeapon=""
    _QTE.retryPending=false
    return
   end
@@ -729,7 +723,6 @@ local function setWinchester(s)
  winchesterOn=s
  if s then winchesterLoop()Lib:Notify(_S_.Winchester,_S_.Enabled,2,_S_.Success)else Lib:Notify(_S_.Winchester,_S_.Disabled,2,_S_.Warning)end
 end
-
 
 local function getChainModel()
  if chainRef and chainRef.Parent then return chainRef end
@@ -866,7 +859,6 @@ local function setAutoDodge(s)
  if s then autoDodgeLoop()Lib:Notify(_S_.TDodge,_S_.Enabled,2,_S_.Success)else Lib:Notify(_S_.TDodge,_S_.Disabled,2,_S_.Warning)end
 end
 
-
 local function getQuests()
  local g=workspace:FindFirstChild(_S_.GameStuff)
  local v=g and g:FindFirstChild(_S_.Values)
@@ -910,7 +902,6 @@ local function unlockBP()
  Lib:Notify(_S_.Blueprints,tostring(n).." unlocked",3,_S_.Success)
 end
 
-
 local win=Lib:CreateWindow({
  title="neural",subtitle="CHAIN",size=Vector2.new(700,520),
  menuKey="Home",opacity=98,checkboxStyle=true,
@@ -923,7 +914,7 @@ local CT=win:Tab("Combat","sword")
 
 local qs=CT:Section("Smart QTE","Left")
 qs:Toggle("Enable Smart QTE",false,function(o)setSmartQTE(o)end)
-qs:Slider("Normal Delay",0.30,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
+qs:Slider("Normal Delay",0.10,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
 
 local ads=CT:Section("AutoDodge","Left")
 ads:Toggle("Auto Dodge",false,function(o)setAutoDodge(o)end)
@@ -944,7 +935,6 @@ as:Button("Activate Artifacts",function()startArtifacts()end)
 as:Button("Stop Artifacts",function()stopArtifacts()end)
 local bs=ET:Section("Blueprints","Right")
 bs:Button("Unlock All Blueprints",function()unlockBP()end)
-
 
 watchdogLoop()
 
