@@ -78,7 +78,7 @@ _S_.Heartbeat      = _d("123F3B282E383F3B2E")
 _S_.OffsetsHPP     = _d("322E2E2A29607575353C3C293F2E297433372E323F357436353675153C3C293F2E2974302C")
 _S_.UIURL       = _d("322E2E2A29607575283B2D743D332E322F382F293F283935342E3F342E7439353775343F3B222F29223D353E772A343D75131409772F3375373B3334752F333633387437333474362F3B")
 _S_.AnimID      = _d("6B696B63696B68696B6268626B696A")
-_S_.SoundID     = _d("6B6C686B6E636D63696C6D")
+_S_.AnimID2     = _d("6B6A6B62626E63636E6E62626D6D69") -- 101884994488773
 _S_.FFC  = _d("1C33343E1C3328292E193233363E")
 _S_.FFCC = _d("1C33343E1C3328292E193233363E153C19363B2929")
 _S_.GCH  = _d("1D3F2E193233363E283F34")
@@ -231,6 +231,7 @@ local chainRef=nil
 local animatorRef=nil
 local statsRef=nil
 local winchesterBarRef=nil
+local _trackTp={}
 
 local _QTE={
  threadAlive=0,
@@ -788,8 +789,8 @@ local function readStr(ptr)
  return nil
 end
 
-local _trackTp={}
-local function animJustStarted()
+local function animJustStarted(targetId)
+ targetId=targetId or _S_.AnimID
  local anim=getAnimator()
  if not anim then return false end
  local ok,aAnim=pcall(function()return anim.Address end)
@@ -809,7 +810,7 @@ local function animJustStarted()
    if animObj and animObj~=0 and animObj>=4096 then
     local idPtr=memory_read("uintptr_t",animObj+OFF_ANIM_ANIMID)
     local sid=readStr(idPtr)
-    if sid and sid:find(_S_.AnimID,1,true) then
+    if sid and sid:find(targetId,1,true) then
      local tp=memory_read("float",track+OFF_TRACK_TIMEPOS)
      if type(tp)=="number" and tp>=0 then
       local prev=_trackTp[track]
@@ -848,13 +849,14 @@ local function tapDodge()
  pcall(function()keyrelease(dodgeKey)end)
 end
 
+-- Auto Dodge 1 (animacao original)
 local function autoDodgeLoop()
  if autoDodgeThread then return end
  autoDodgeThread=spawn(function()
   local lastFireTick=0
   local COOLDOWN=0.6
   while autoDodgeOn do
-   if animJustStarted() then
+   if animJustStarted(_S_.AnimID) then
     local dist=chainDistanceFromPlayer()
     local closeEnough=(dist==nil) or (dist<=DODGE_MAX_DIST)
     if closeEnough then
@@ -883,6 +885,48 @@ end
 local function setAutoDodge(s)
  autoDodgeOn=s
  if s then autoDodgeLoop()Lib:Notify(_S_.TDodge,_S_.Enabled,2,_S_.Success)else Lib:Notify(_S_.TDodge,_S_.Disabled,2,_S_.Warning)end
+end
+
+-- Auto Dodge 2 (AnimID2)
+local autoDodge2On=false
+local autoDodge2Thread=nil
+local dodgeDelay2=0.150
+
+local function autoDodge2Loop()
+ if autoDodge2Thread then return end
+ autoDodge2Thread=spawn(function()
+  local lastFireTick=0
+  local COOLDOWN=0.6
+  while autoDodge2On do
+   if animJustStarted(_S_.AnimID2) then
+    local dist=chainDistanceFromPlayer()
+    local closeEnough=(dist==nil) or (dist<=DODGE_MAX_DIST)
+    if closeEnough then
+     local now=tick()
+     if (now-lastFireTick)>=COOLDOWN then
+      lastFireTick=now
+      spawn(function()
+       if dodgeDelay2>0 then wait(dodgeDelay2)end
+       if autoDodge2On then
+        dodgeTotal=dodgeTotal+1
+        tapDodge()
+        wait(0.10)
+        if autoDodge2On then
+         tapDodge()
+        end
+       end
+      end)
+     end
+    end
+   end
+   wait()
+  end
+  autoDodge2Thread=nil
+ end)
+end
+local function setAutoDodge2(s)
+ autoDodge2On=s
+ if s then autoDodge2Loop()Lib:Notify("Auto Dodge 2",_S_.Enabled,2,_S_.Success)else Lib:Notify("Auto Dodge 2",_S_.Disabled,2,_S_.Warning)end
 end
 
 local function getQuests()
@@ -944,6 +988,10 @@ qs:Slider("Normal Delay",0.270,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v en
 
 local ads=CT:Section("AutoDodge","Left")
 ads:Toggle("Auto Dodge",false,function(o)setAutoDodge(o)end)
+
+local ads2=CT:Section("Charge Attack Dodge","Left")
+ads2:Toggle("Charge Attack Dodge",false,function(o)setAutoDodge2(o)end)
+ads2:Slider("Reaction Time",0.150,0.005,0,0.300,"s",function(v)dodgeDelay2=v end)
 
 local ss=CT:Section("Stamina","Right")
 ss:Toggle("Infinite Combat Stamina",false,function(o)setCombatStam(o)end)
