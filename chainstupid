@@ -78,7 +78,8 @@ _S_.Heartbeat      = _d("123F3B282E383F3B2E")
 _S_.OffsetsHPP     = _d("322E2E2A29607575353C3C293F2E297433372E323F357436353675153C3C293F2E2974302C")
 _S_.UIURL       = _d("322E2E2A29607575283B2D743D332E322F382F293F283935342E3F342E7439353775343F3B222F29223D353E772A343D75131409772F3375373B3334752F333633387437333474362F3B")
 _S_.AnimID      = _d("6B696B63696B68696B6268626B696A")
-_S_.AnimID2     = _d("6B6A6B62626E63636E6E62626D6D69") -- 101884994488773
+_S_.AnimID2     = _d("6D626E6E6A6C6E6D626E6D6E6A6C") -- 78440647847406
+_S_.AnimID3     = _d("6B6A6B62626E63636E6E62626D6D69") -- 101884994488773
 _S_.FFC  = _d("1C33343E1C3328292E193233363E")
 _S_.FFCC = _d("1C33343E1C3328292E193233363E153C19363B2929")
 _S_.GCH  = _d("1D3F2E193233363E283F34")
@@ -890,31 +891,46 @@ end
 -- Auto Dodge 2 (AnimID2)
 local autoDodge2On=false
 local autoDodge2Thread=nil
-local dodgeDelay2=0.150
+local dodge2Dist=20
+local dodge2Click=false
+local function clickMouse1()
+ if type(mouse1click)=="function" then
+  pcall(function()mouse1click()end)
+ elseif type(mouse1press)=="function" and type(mouse1release)=="function" then
+  pcall(function()mouse1press()end)
+  pcall(function()wait(0.02)end)
+  pcall(function()mouse1release()end)
+ end
+end
+local DODGE2_WINDOW=2.0
 
 local function autoDodge2Loop()
  if autoDodge2Thread then return end
  autoDodge2Thread=spawn(function()
   local lastFireTick=0
   local COOLDOWN=0.6
+  local pendingUntil=0
   while autoDodge2On do
-   if animJustStarted(_S_.AnimID2) then
-    local dist=chainDistanceFromPlayer()
-    local closeEnough=(dist==nil) or (dist<=DODGE_MAX_DIST)
-    if closeEnough then
-     local now=tick()
-     if (now-lastFireTick)>=COOLDOWN then
+   local now=tick()
+   local started2=animJustStarted(_S_.AnimID2)
+   local started3=animJustStarted(_S_.AnimID3)
+   if (started2 or started3) and (now-lastFireTick)>=COOLDOWN then
+    pendingUntil=now+DODGE2_WINDOW
+   end
+   if pendingUntil>0 then
+    if now>pendingUntil then
+     pendingUntil=0
+    else
+     local dist=chainDistanceFromPlayer()
+     if dist~=nil and dist<=dodge2Dist then
+      pendingUntil=0
       lastFireTick=now
+      dodgeTotal=dodgeTotal+1
+      tapDodge()
+      if dodge2Click then clickMouse1() end
       spawn(function()
-       if dodgeDelay2>0 then wait(dodgeDelay2)end
-       if autoDodge2On then
-        dodgeTotal=dodgeTotal+1
-        tapDodge()
-        wait(0.10)
-        if autoDodge2On then
-         tapDodge()
-        end
-       end
+       wait(0.10)
+       if autoDodge2On then tapDodge() end
       end)
      end
     end
@@ -926,7 +942,7 @@ local function autoDodge2Loop()
 end
 local function setAutoDodge2(s)
  autoDodge2On=s
- if s then autoDodge2Loop()Lib:Notify("Auto Dodge 2",_S_.Enabled,2,_S_.Success)else Lib:Notify("Auto Dodge 2",_S_.Disabled,2,_S_.Warning)end
+ if s then autoDodge2Loop()Lib:Notify("Charge Attack Dodge",_S_.Enabled,2,_S_.Success)else Lib:Notify("Charge Attack Dodge",_S_.Disabled,2,_S_.Warning)end
 end
 
 local function getQuests()
@@ -991,7 +1007,8 @@ ads:Toggle("Auto Dodge",false,function(o)setAutoDodge(o)end)
 
 local ads2=CT:Section("Charge Attack Dodge","Left")
 ads2:Toggle("Charge Attack Dodge",false,function(o)setAutoDodge2(o)end)
-ads2:Slider("Reaction Time",0.150,0.005,0,0.300,"s",function(v)dodgeDelay2=v end)
+ads2:Slider("Trigger Distance",20,1,5,30,"studs",function(v)dodge2Dist=v end)
+ads2:Toggle("Click Mouse1 with Q",false,function(o)dodge2Click=o end)
 
 local ss=CT:Section("Stamina","Right")
 ss:Toggle("Infinite Combat Stamina",false,function(o)setCombatStam(o)end)
