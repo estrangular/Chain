@@ -19,7 +19,7 @@ _pd(30,70)
 local _B='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,-./:;<=>?@[]^_`{|}~';local _BD={};for i=1,#_B do _BD[_ss(_B,i,i)]=i-1 end
 _pd(25,60)
 local function _e(s)local x={}for i=1,#s do local b=_sb(s,i);x[i]=_sc(_X[b][(i*37+11)%256])end;local xs=_tc(x);local o={}for i=1,#xs do local b=_sb(xs,i);o[#o+1]=_ss(_B,b%91+1,b%91+1)o[#o+1]=_ss(_B,_mf(b/91)+1,_mf(b/91)+1)end;return _tc(o)end
-local function _de(s)local by={}for i=1,#s,2 do local c1=_BD[_ss(s,i,i)]or 0;local c2=_BD[_ss(s,i+1,i+1)]or 0;local b=c1+c2*91;if b>255 then b=b%256 end;by[#by+1]=_sc(b)end;local xs=_tc(by);local o={}for i=1,#xs do local b=_sb(xs,i);o[i]=_sc(_X[b][(i*37+11)%256])end;return _tc(o)end
+local function _de(s)local by={}for i=1,#s,2 do local c1=_BD[_ss(s,i,i)]or 0;local c2=_BD[_ss(s,i+1,i+1)]or 0;local b=c1+c2*91;if b>255 then b=b%256 end;by[#by+1]=_sc(b)end;local xs=_tc(by);local o={};for i=1,#xs do local b=_sb(xs,i);o[i]=_sc(_X[b][(i*37+11)%256])end;return _tc(o)end
 _pd(30,75)
 local _SES = _d("39323B333405293F2929333534742E222E")
 local _S=1;local _tk1,_enc,_rb,_dec,_ok=nil,nil,nil,nil,false
@@ -42,7 +42,6 @@ _S_.Misc        = _d("17332939")
 _S_.AI          = _d("1B13")
 _S_.CHAIN       = _d("19121B1314")
 _S_.HRP         = _d("122F373B3435333E0835352E0A3B282E")
-_S_.ChokeSwing  = _d("193235313F092D33343D")
 _S_.Humanoid    = _d("122F373B3435333E")
 _S_.Animator    = _d("1B3433373B2E3528")
 _S_.PC          = _d("0A19")
@@ -78,8 +77,8 @@ _S_.Heartbeat      = _d("123F3B282E383F3B2E")
 _S_.OffsetsHPP     = _d("322E2E2A29607575353C3C293F2E297433372E323F357436353675153C3C293F2E2974302C")
 _S_.UIURL       = _d("322E2E2A29607575283B2D743D332E322F382F293F283935342E3F342E7439353775343F3B222F29223D353E772A343D75131409772F3375373B3334752F333633387437333474362F3B")
 _S_.AnimID      = _d("6B696B63696B68696B6268626B696A")
-_S_.AnimID2     = _d("6D626E6E6A6C6E6D626E6D6E6A6C") -- 78440647847406
-_S_.AnimID3     = _d("6B6A6B62626E63636E6E62626D6D69") -- 101884994488773
+_S_.AnimID2     = _d("6D626E6E6A6C6E6D626E6D6E6A6C")
+_S_.AnimID3     = _d("6B6A6B62626E63636E6E62626D6D69")
 _S_.FFC  = _d("1C33343E1C3328292E193233363E")
 _S_.FFCC = _d("1C33343E1C3328292E193233363E153C19363B2929")
 _S_.GCH  = _d("1D3F2E193233363E283F34")
@@ -118,8 +117,6 @@ _S_.TUnload   = _d("0F3436353B3E7A19323B3334")
 _S_.TActArt   = _d("1B392E332C3B2E3F7A1B282E333C3B392E29")
 _S_.TStopArt  = _d("092E352A7A1B282E333C3B392E29")
 _S_.TUnlockBP = _d("0F34363539317A1B36367A18362F3F2A2833342E29")
-_S_.Notify    = _d("19323B3334")
-_S_.PressHome = _d("0A283F29297A1235373F7A2E357A2E353D3D363F")
 
 loadstring(game:HttpGet(_S_.UIURL))()
 local Lib=_G.INSUI;if not Lib then return end
@@ -200,13 +197,10 @@ local function getOffsets()
 end
 
 local O=getOffsets()
-local OFF_SOUND_ISPLAYING=O.Sound.IsPlaying or 0x130
-local OFF_SOUND_SOUNDID=O.Sound.SoundId or 0xb8
 local OFF_ANIMATOR_ACTIVE=O.Animator.ActiveAnimations or 0xa80
 local OFF_NODE_NEXT=0x0
 local OFF_NODE_TRACK=0x10
 local OFF_TRACK_ANIM=O.AnimationTrack.Animation or 0xa8
-local OFF_TRACK_ISPLAYING=O.AnimationTrack.IsPlaying or 0x522
 local OFF_TRACK_TIMEPOS=O.AnimationTrack.TimePosition or 0xc8
 local OFF_ANIM_ANIMID=0xb0
 print("[Chain] Offsets source: ".._offSource.." | Roblox: "..tostring(O.ClientVersion or "?"))
@@ -222,29 +216,16 @@ local QTE_WINCHESTER_PREDELAY=0.15
 local QTE_WINCHESTER_TOMA_GATE=0.08
 local QTE_WINCHESTER_TOMA_STALE=0.50
 local artifactsOn=false;local artifactsConn=nil
-local autoDodgeOn=false
-local autoDodgeThread=nil
+local autoDodgeOn=false;local autoDodgeThread=nil
 local dodgeKey=0x51
-local dodgeTotal=0
 local dodgeDelay=0.312
 local DODGE_MAX_DIST=15
-local chainRef=nil
-local animatorRef=nil
-local statsRef=nil
-local winchesterBarRef=nil
+local chainRef,animatorRef,statsRef,winchesterBarRef=nil,nil,nil,nil
 local _trackTp={}
 
 local _QTE={
- threadAlive=0,
- lastWeapon=nil,
- lastClickAt=0,
- lastClickLetter="",
- lastClickWeapon="",
- forceReset=false,
- retryPending=false,
- retryKey=nil,
- retryLetter="",
- retryWeapon="",
+ threadAlive=0,lastWeapon=nil,lastClickAt=0,lastClickLetter="",lastClickWeapon="",
+ forceReset=false,retryPending=false,retryKey=nil,retryLetter="",retryWeapon="",
 }
 
 local function findChildCI(parent,name)
@@ -254,23 +235,17 @@ local function findChildCI(parent,name)
  local ok2,children=pcall(function()return _gch(parent)end)
  if not ok2 or not children then return nil end
  local lower=string.lower(name)
- for i=1,#children do
-  if string.lower(children[i].Name)==lower then return children[i] end
- end
+ for i=1,#children do if string.lower(children[i].Name)==lower then return children[i] end end
  return nil
 end
-
 local function findDeep(root,name)
  if not root then return nil end
  local lower=string.lower(name)
  local ok,list=pcall(function()return _gde(root)end)
  if not ok or not list then return nil end
- for i=1,#list do
-  if string.lower(list[i].Name)==lower then return list[i] end
- end
+ for i=1,#list do if string.lower(list[i].Name)==lower then return list[i] end end
  return nil
 end
-
 local function getPlayerStats()
  local tries={
   function()return findChildCI(LocalPlayer,_S_.PlayerStats)end,
@@ -278,13 +253,9 @@ local function getPlayerStats()
   function()local p=Players[LocalPlayer.Name];return findChildCI(p,_S_.PlayerStats)end,
   function()local p=game.Players[LocalPlayer.Name];return findChildCI(p,_S_.PlayerStats)end,
  }
- for i=1,#tries do
-  local ok,r=pcall(tries[i])
-  if ok and r then return r end
- end
+ for i=1,#tries do local ok,r=pcall(tries[i]) if ok and r then return r end end
  return nil
 end
-
 local function findPlayerStat(childName)
  local ps=getPlayerStats()
  if ps then local f=findChildCI(ps,childName);if f then return f end end
@@ -292,13 +263,9 @@ local function findPlayerStat(childName)
   function()return LocalPlayer[_S_.PlayerStats] and LocalPlayer[_S_.PlayerStats][childName]end,
   function()return Players[LocalPlayer.Name][_S_.PlayerStats] and Players[LocalPlayer.Name][_S_.PlayerStats][childName]end,
  }
- for i=1,#tries do
-  local ok,r=pcall(tries[i])
-  if ok and r then return r end
- end
+ for i=1,#tries do local ok,r=pcall(tries[i]) if ok and r then return r end end
  return findDeep(game.Players,childName)
 end
-
 local function getStatsConfig()
  if statsRef and statsRef.Parent then return statsRef end
  local c=workspace:FindFirstChild(LocalPlayer.Name)
@@ -307,25 +274,21 @@ local function getStatsConfig()
  if s then statsRef=s end
  return s
 end
-
 local function getClashState()
  local s=getStatsConfig()
  if not s then return false end
  return _gatt(s,_S_.ClashState)==true
 end
-
 local function getNormalQTEText()
  local g=LocalPlayer:FindFirstChild(_S_.PlayerGui);local i=g and g:FindFirstChild(_S_.Ingame);local m=i and i:FindFirstChild(_S_.MechanicsFrame)
  local q=m and m:FindFirstChild(_S_.QTEToma);local b=q and q:FindFirstChild(_S_.ImageButton);local p=b and b:FindFirstChild(_S_.PC)
  if p and _isa(p,_S_.TextLabel)then return tostring(p.Text or ""):upper()end;return ""
 end
-
 local function getXSawQTEText()
  local g=LocalPlayer:FindFirstChild(_S_.PlayerGui);local i=g and g:FindFirstChild(_S_.Ingame);local m=i and i:FindFirstChild(_S_.MechanicsFrame)
  local x=m and m:FindFirstChild(_S_.QTEXSaw);local b=x and x:FindFirstChild(_S_.ImageButton);local p=b and b:FindFirstChild(_S_.PC)
  if p and _isa(p,_S_.TextLabel)then return tostring(p.Text or ""):upper()end;return ""
 end
-
 local function getFrameTextFor(weapon)
  if weapon=="xsaw" then return getXSawQTEText() end
  if weapon=="normal" then return getNormalQTEText() end
@@ -336,7 +299,6 @@ local function getFrameTextFor(weapon)
  end
  return ""
 end
-
 local function detectWeapon()
  local c=LocalPlayer.Character;local s=c and c:FindFirstChild(_S_.STRG)
  if not s then local w=workspace:FindFirstChild(LocalPlayer.Name);s=w and w:FindFirstChild(_S_.STRG)end
@@ -347,36 +309,16 @@ local function detectWeapon()
  if s:FindFirstChild(_S_.Tomahawk)then return "normal"end
  return nil
 end
-
 local function _onCharacterAdded()
- statsRef=nil
- winchesterBarRef=nil
- chainRef=nil
- animatorRef=nil
- _QTE.forceReset=true
- _QTE.lastClickLetter=""
- _QTE.lastClickWeapon=""
- _QTE.lastWeapon=nil
- _QTE.retryPending=false
- _QTE.retryLetter=""
- _QTE.retryKey=nil
+ statsRef=nil;winchesterBarRef=nil;chainRef=nil;animatorRef=nil
+ _QTE.forceReset=true;_QTE.lastClickLetter="";_QTE.lastClickWeapon=""
+ _QTE.lastWeapon=nil;_QTE.retryPending=false;_QTE.retryLetter="";_QTE.retryKey=nil
  _trackTp={}
 end
-
-pcall(function()
- LocalPlayer.CharacterAdded:Connect(function()
-  spawn(function() wait(1.5); _onCharacterAdded() end)
- end)
-end)
-
-pcall(function()
- LocalPlayer.CharacterRemoving:Connect(function()
-  _onCharacterAdded()
- end)
-end)
+pcall(function() LocalPlayer.CharacterAdded:Connect(function() spawn(function() wait(1.5); _onCharacterAdded() end) end) end)
+pcall(function() LocalPlayer.CharacterRemoving:Connect(function() _onCharacterAdded() end) end)
 
 local QTE_KEYMAP={F=70,R=82,E=69,G=71,T=84}
-
 local function _clickKey(k)
  if not k then return end
  pcall(function()keypress(k)end)
@@ -400,60 +342,31 @@ local function smartQTELoop()
   local xsawStuckClick=false
   while smartQTEOn do
    _QTE.threadAlive=tick()
-
    if _QTE.retryPending then
     local rLetter=_QTE.retryLetter
     local rWeapon=_QTE.retryWeapon
     local rKey=_QTE.retryKey
-    _QTE.retryPending=false
-    _QTE.retryLetter=""
-    _QTE.retryKey=nil
+    _QTE.retryPending=false;_QTE.retryLetter="";_QTE.retryKey=nil
     if rKey and rLetter~="" and getClashState() then
      local cur=getFrameTextFor(rWeapon)
      if cur==rLetter then
       _clickKey(rKey)
-      _QTE.lastClickAt=tick()
-      _QTE.lastClickLetter=rLetter
-      _QTE.lastClickWeapon=rWeapon
+      _QTE.lastClickAt=tick();_QTE.lastClickLetter=rLetter;_QTE.lastClickWeapon=rWeapon
      end
     end
    end
-
    if _QTE.forceReset then
-    normLast=nil
-    winXSawLast=""
-    winXSawAt=0
-    winXSawEmptyAt=0
-    winTomaLast=""
-    winTomaStale=""
-    winTomaPending=false
-    xsawLetterNow=""
-    xsawLetterAt=0
-    xsawFirstClick=false
-    xsawStuckClick=false
-    _QTE.forceReset=false
-    _QTE.lastClickLetter=""
-    _QTE.lastClickWeapon=""
-    _QTE.retryPending=false
+    normLast=nil;winXSawLast="";winXSawAt=0;winXSawEmptyAt=0
+    winTomaLast="";winTomaStale="";winTomaPending=false
+    xsawLetterNow="";xsawLetterAt=0;xsawFirstClick=false;xsawStuckClick=false
+    _QTE.forceReset=false;_QTE.lastClickLetter="";_QTE.lastClickWeapon="";_QTE.retryPending=false
    end
-
    if not getClashState()then
-    normLast=nil
-    winXSawLast=""
-    winXSawAt=0
-    winXSawEmptyAt=0
-    winTomaLast=""
-    winTomaStale=""
-    winTomaPending=false
-    xsawLetterNow=""
-    xsawLetterAt=0
-    xsawFirstClick=false
-    xsawStuckClick=false
-    _QTE.lastClickLetter=""
-    _QTE.lastClickWeapon=""
-    _QTE.retryPending=false
-    _QTE.retryLetter=""
-    _QTE.retryKey=nil
+    normLast=nil;winXSawLast="";winXSawAt=0;winXSawEmptyAt=0
+    winTomaLast="";winTomaStale="";winTomaPending=false
+    xsawLetterNow="";xsawLetterAt=0;xsawFirstClick=false;xsawStuckClick=false
+    _QTE.lastClickLetter="";_QTE.lastClickWeapon="";_QTE.retryPending=false
+    _QTE.retryLetter="";_QTE.retryKey=nil
     wait(0.05)
    else
     local w=detectWeapon()
@@ -461,36 +374,20 @@ local function smartQTELoop()
      local tx=getXSawQTEText()
      local tt=getNormalQTEText()
      if tx~=""then
-      winXSawEmptyAt=0
-      winTomaLast=""
-      winTomaPending=false
-      winTomaStale=""
-      if tx~=winXSawLast then
-       winXSawLast=tx
-       winXSawAt=tick()
-      end
+      winXSawEmptyAt=0;winTomaLast="";winTomaPending=false;winTomaStale=""
+      if tx~=winXSawLast then winXSawLast=tx;winXSawAt=tick() end
       if (tick()-winXSawAt)>=QTE_WINCHESTER_PREDELAY then
        local k=QTE_KEYMAP[tx:sub(1,1)]
        if k then
         pcall(function()keypress(k)end)
-        spawn(function()
-         wait(0.01)
-         pcall(function()keyrelease(k)end)
-        end)
-        _QTE.lastClickAt=tick()
-        _QTE.lastClickLetter=tx
-        _QTE.lastClickWeapon="winchester"
+        spawn(function() wait(0.01) pcall(function()keyrelease(k)end) end)
+        _QTE.lastClickAt=tick();_QTE.lastClickLetter=tx;_QTE.lastClickWeapon="winchester"
        end
       end
      elseif tt~=""then
       if winXSawEmptyAt==0 then
-       winXSawEmptyAt=tick()
-       winTomaStale=winXSawLast
-       _QTE.lastClickLetter=""
-       _QTE.lastClickWeapon=""
-       _QTE.retryPending=false
-       _QTE.retryKey=nil
-       _QTE.retryLetter=""
+       winXSawEmptyAt=tick();winTomaStale=winXSawLast
+       _QTE.lastClickLetter="";_QTE.lastClickWeapon="";_QTE.retryPending=false;_QTE.retryKey=nil;_QTE.retryLetter=""
       end
       local emptyAge=tick()-winXSawEmptyAt
       local gateOk=emptyAge>=QTE_WINCHESTER_TOMA_GATE
@@ -503,8 +400,7 @@ local function smartQTELoop()
          local expected=tt
          local reaction=0.10+(math.random()*math.random()*0.10)
          spawn(function()
-          wait(reaction)
-          winTomaPending=false
+          wait(reaction);winTomaPending=false
           if not smartQTEOn then return end
           if not getClashState() then return end
           if getXSawQTEText()~="" then return end
@@ -515,35 +411,23 @@ local function smartQTELoop()
           if not kk then return end
           winTomaLast=cur
           _clickKey(kk)
-          _QTE.lastClickAt=tick()
-          _QTE.lastClickLetter=cur
-          _QTE.lastClickWeapon="winchester"
+          _QTE.lastClickAt=tick();_QTE.lastClickLetter=cur;_QTE.lastClickWeapon="winchester"
          end)
         end
        end
       end
      else
-      winXSawLast=""
-      winXSawAt=0
-      winXSawEmptyAt=0
-      winTomaLast=""
-      winTomaStale=""
-      winTomaPending=false
+      winXSawLast="";winXSawAt=0;winXSawEmptyAt=0
+      winTomaLast="";winTomaStale="";winTomaPending=false
      end
      wait(QTE_WINCHESTER_DELAY)
     elseif w=="xsaw"then
      local t=getXSawQTEText()
      if t==""then
-      xsawLetterNow=""
-      xsawLetterAt=0
-      xsawFirstClick=false
-      xsawStuckClick=false
+      xsawLetterNow="";xsawLetterAt=0;xsawFirstClick=false;xsawStuckClick=false
      else
       if t~=xsawLetterNow then
-       xsawLetterNow=t
-       xsawLetterAt=tick()
-       xsawFirstClick=false
-       xsawStuckClick=false
+       xsawLetterNow=t;xsawLetterAt=tick();xsawFirstClick=false;xsawStuckClick=false
       end
       local elapsed=tick()-xsawLetterAt
       local k=QTE_KEYMAP[t:sub(1,1)]
@@ -556,9 +440,7 @@ local function smartQTELoop()
        end
        if doClick then
         _clickKey(k)
-        _QTE.lastClickAt=tick()
-        _QTE.lastClickLetter=t
-        _QTE.lastClickWeapon="xsaw"
+        _QTE.lastClickAt=tick();_QTE.lastClickLetter=t;_QTE.lastClickWeapon="xsaw"
        end
       end
      end
@@ -577,9 +459,7 @@ local function smartQTELoop()
         if not smartQTEOn then return end
         if not getClashState() then return end
         _clickKey(k)
-        _QTE.lastClickAt=tick()
-        _QTE.lastClickLetter=expectedLetter
-        _QTE.lastClickWeapon="normal"
+        _QTE.lastClickAt=tick();_QTE.lastClickLetter=expectedLetter;_QTE.lastClickWeapon="normal"
        end)
       end
      end
@@ -593,9 +473,7 @@ end
 
 local function setSmartQTE(s)
  smartQTEOn=s
- _QTE.forceReset=true
- _QTE.retryPending=false
- _QTE.threadAlive=tick()
+ _QTE.forceReset=true;_QTE.retryPending=false;_QTE.threadAlive=tick()
  if s then smartQTELoop()Lib:Notify(_S_.TQTE,_S_.Enabled,2,_S_.Success)else Lib:Notify(_S_.TQTE,_S_.Disabled,2,_S_.Warning)end
 end
 
@@ -605,43 +483,27 @@ local function watchdogLoop()
  _watchdogConn=RunService[_S_.Heartbeat]:Connect(function()
   if not smartQTEOn then return end
   if not getClashState() then
-   _QTE.lastClickLetter=""
-   _QTE.lastClickWeapon=""
-   _QTE.retryPending=false
+   _QTE.lastClickLetter="";_QTE.lastClickWeapon="";_QTE.retryPending=false
    return
   end
-
   if (tick()-_QTE.threadAlive)>0.8 then
-   smartThread=nil
-   _QTE.forceReset=true
-   _QTE.threadAlive=tick()
+   smartThread=nil;_QTE.forceReset=true;_QTE.threadAlive=tick()
    pcall(function() smartQTELoop() end)
    return
   end
-
   local w=detectWeapon()
   if _QTE.lastWeapon~=w then
-   _QTE.lastWeapon=w
-   _QTE.forceReset=true
-   _QTE.lastClickLetter=""
-   _QTE.retryPending=false
+   _QTE.lastWeapon=w;_QTE.forceReset=true;_QTE.lastClickLetter="";_QTE.retryPending=false
    return
   end
-
   if w=="normal" then
-   _QTE.lastClickLetter=""
-   _QTE.lastClickWeapon=""
-   _QTE.retryPending=false
+   _QTE.lastClickLetter="";_QTE.lastClickWeapon="";_QTE.retryPending=false
    return
   end
-
   if w=="winchester" and getXSawQTEText()=="" then
-   _QTE.lastClickLetter=""
-   _QTE.lastClickWeapon=""
-   _QTE.retryPending=false
+   _QTE.lastClickLetter="";_QTE.lastClickWeapon="";_QTE.retryPending=false
    return
   end
-
   if _QTE.lastClickWeapon~="" and _QTE.lastClickLetter~="" and not _QTE.retryPending then
    local dt=tick()-_QTE.lastClickAt
    if dt>0.15 and dt<0.5 then
@@ -649,14 +511,10 @@ local function watchdogLoop()
     if cur==_QTE.lastClickLetter then
      local k=QTE_KEYMAP[cur:sub(1,1)]
      if k then
-      _QTE.retryPending=true
-      _QTE.retryKey=k
-      _QTE.retryLetter=cur
-      _QTE.retryWeapon=_QTE.lastClickWeapon
+      _QTE.retryPending=true;_QTE.retryKey=k;_QTE.retryLetter=cur;_QTE.retryWeapon=_QTE.lastClickWeapon
      end
     end
-    _QTE.lastClickLetter=""
-    _QTE.lastClickWeapon=""
+    _QTE.lastClickLetter="";_QTE.lastClickWeapon=""
    end
   end
  end)
@@ -699,10 +557,7 @@ local function getNormalStam()
  local x=c:FindFirstChild(_S_.Stamina,true)
  if x and _isa(x,_S_.IntValue)then return x end
  local s=c:FindFirstChild(_S_.Stats)
- if s then
-  local y=s:FindFirstChild(_S_.Stamina)
-  if y and _isa(y,_S_.IntValue)then return y end
- end
+ if s then local y=s:FindFirstChild(_S_.Stamina); if y and _isa(y,_S_.IntValue)then return y end end
  return nil
 end
 local function normalStamLoop()
@@ -771,7 +626,6 @@ local function getChainModel()
  chainRef=nil;animatorRef=nil
  return nil
 end
-
 local function getAnimator()
  if animatorRef and animatorRef.Parent then return animatorRef end
  local chain=getChainModel()
@@ -782,14 +636,12 @@ local function getAnimator()
  if anim then animatorRef=anim end
  return anim
 end
-
 local function readStr(ptr)
  if not ptr or ptr==0 or ptr<4096 then return nil end
  local ok,s=pcall(function()return memory_read("string",ptr)end)
  if ok and type(s)=="string" and #s>0 then return s end
  return nil
 end
-
 local function animJustStarted(targetId)
  targetId=targetId or _S_.AnimID
  local anim=getAnimator()
@@ -798,9 +650,7 @@ local function animJustStarted(targetId)
  if not ok or not aAnim or aAnim==0 then return false end
  local head=memory_read("uintptr_t",aAnim+OFF_ANIMATOR_ACTIVE)
  if not head or head==0 then return false end
- local seen={}
- local node=head
- local iter=0
+ local seen={};local node=head;local iter=0
  while node and node~=0 and iter<64 do
   iter=iter+1
   if seen[node] then break end
@@ -816,11 +666,8 @@ local function animJustStarted(targetId)
      if type(tp)=="number" and tp>=0 then
       local prev=_trackTp[track]
       _trackTp[track]=tp
-      if prev==nil then
-       if tp<0.5 then return true end
-      else
-       if tp<prev-0.1 and tp<0.5 then return true end
-      end
+      if prev==nil then if tp<0.5 then return true end
+      else if tp<prev-0.1 and tp<0.5 then return true end end
      end
     end
    end
@@ -829,7 +676,6 @@ local function animJustStarted(targetId)
  end
  return false
 end
-
 local function chainDistanceFromPlayer()
  local chain=getChainModel()
  if not chain then return nil end
@@ -844,18 +690,15 @@ local function chainDistanceFromPlayer()
  if not ok or not ok2 or not cPos or not mPos then return nil end
  return (cPos-mPos).Magnitude
 end
-
 local function tapDodge()
  pcall(function()keypress(dodgeKey)end)
  pcall(function()keyrelease(dodgeKey)end)
 end
 
--- Auto Dodge 1 (animacao original)
 local function autoDodgeLoop()
  if autoDodgeThread then return end
  autoDodgeThread=spawn(function()
-  local lastFireTick=0
-  local COOLDOWN=0.6
+  local lastFireTick=0;local COOLDOWN=0.6
   while autoDodgeOn do
    if animJustStarted(_S_.AnimID) then
     local dist=chainDistanceFromPlayer()
@@ -867,12 +710,8 @@ local function autoDodgeLoop()
       spawn(function()
        if dodgeDelay>0 then wait(dodgeDelay)end
        if autoDodgeOn then
-        dodgeTotal=dodgeTotal+1
-        tapDodge()
-        wait(0.10)
-        if autoDodgeOn then
-         tapDodge()
-        end
+        tapDodge();wait(0.10)
+        if autoDodgeOn then tapDodge() end
        end
       end)
      end
@@ -888,28 +727,19 @@ local function setAutoDodge(s)
  if s then autoDodgeLoop()Lib:Notify(_S_.TDodge,_S_.Enabled,2,_S_.Success)else Lib:Notify(_S_.TDodge,_S_.Disabled,2,_S_.Warning)end
 end
 
--- Auto Dodge 2 (AnimID2)
-local autoDodge2On=false
-local autoDodge2Thread=nil
-local dodge2Dist=20
-local dodge2Click=false
+local autoDodge2On=false;local autoDodge2Thread=nil
+local dodge2Dist=20;local dodge2Click=false
 local function clickMouse1()
- if type(mouse1click)=="function" then
-  pcall(function()mouse1click()end)
+ if type(mouse1click)=="function" then pcall(function()mouse1click()end)
  elseif type(mouse1press)=="function" and type(mouse1release)=="function" then
-  pcall(function()mouse1press()end)
-  pcall(function()wait(0.02)end)
-  pcall(function()mouse1release()end)
+  pcall(function()mouse1press()end);pcall(function()wait(0.02)end);pcall(function()mouse1release()end)
  end
 end
 local DODGE2_WINDOW=2.0
-
 local function autoDodge2Loop()
  if autoDodge2Thread then return end
  autoDodge2Thread=spawn(function()
-  local lastFireTick=0
-  local COOLDOWN=0.6
-  local pendingUntil=0
+  local lastFireTick=0;local COOLDOWN=0.6;local pendingUntil=0
   while autoDodge2On do
    local now=tick()
    local started2=animJustStarted(_S_.AnimID2)
@@ -918,20 +748,14 @@ local function autoDodge2Loop()
     pendingUntil=now+DODGE2_WINDOW
    end
    if pendingUntil>0 then
-    if now>pendingUntil then
-     pendingUntil=0
+    if now>pendingUntil then pendingUntil=0
     else
      local dist=chainDistanceFromPlayer()
      if dist~=nil and dist<=dodge2Dist then
-      pendingUntil=0
-      lastFireTick=now
-      dodgeTotal=dodgeTotal+1
+      pendingUntil=0;lastFireTick=now
       tapDodge()
       if dodge2Click then clickMouse1() end
-      spawn(function()
-       wait(0.10)
-       if autoDodge2On then tapDodge() end
-      end)
+      spawn(function() wait(0.10); if autoDodge2On then tapDodge() end end)
      end
     end
    end
@@ -976,7 +800,6 @@ local function stopArtifacts()
  if artifactsConn then _disco(artifactsConn);artifactsConn=nil end
  Lib:Notify(_S_.Artifacts,_S_.Stopped,2,_S_.Warning)
 end
-
 local function getBP()return findPlayerStat(_S_.Blueprints)end
 local function unlockBP()
  local b=getBP()
@@ -990,10 +813,77 @@ end
 
 local win=Lib:CreateWindow({
  title="neural",subtitle="CHAIN",size=Vector2.new(700,520),
- menuKey="Home",opacity=98,checkboxStyle=true,
+ menuKey="P",opacity=98,checkboxStyle=true,
 })
 win:AddSettingsTab("gear")
-Lib:Notify("Chain","Press Home to toggle",4,"info")
+
+do
+ local found=false
+ local function try(fn) local r=pcall(fn) if r then found=true end end
+
+ try(function() if type(Lib.SetSetting)=="function" then Lib:SetSetting("keybind_overlay",false) end end)
+ try(function() if type(Lib.SetSetting)=="function" then Lib:SetSetting("KeybindOverlay",false) end end)
+ try(function() if type(Lib.SetSetting)=="function" then Lib:SetSetting("Keybind overlay",false) end end)
+ try(function() if type(Lib.SetOption)=="function" then Lib:SetOption("keybind_overlay",false) end end)
+ try(function() if type(Lib.SetOption)=="function" then Lib:SetOption("Keybind overlay",false) end end)
+ try(function() if type(Lib.SetFlag)=="function" then Lib:SetFlag("keybind_overlay",false) end end)
+ try(function() if type(Lib.ToggleSetting)=="function" then Lib:ToggleSetting("keybind_overlay",false) end end)
+ try(function() if type(Lib.Set)=="function" then Lib:Set("keybind_overlay",false) end end)
+ try(function() if type(Lib.Set) == "function" then Lib:Set("keybind_overlay", false) end end)
+
+ if type(Lib.Settings)=="table" then
+  for k,v in pairs(Lib.Settings) do
+   local lk=string.lower(tostring(k))
+   if lk:find("keybind") and lk:find("overlay") then
+    if type(v)=="table" then
+     pcall(function() v.Value=false end)
+     pcall(function() v.value=false end)
+     pcall(function() v.Enabled=false end)
+     pcall(function() v.enabled=false end)
+    elseif type(v)=="boolean" then
+     pcall(function() Lib.Settings[k]=false end)
+    end
+    found=true
+   end
+  end
+ end
+
+ if type(Lib.Options)=="table" then
+  for k,v in pairs(Lib.Options) do
+   local lk=string.lower(tostring(k))
+   if lk:find("keybind") and lk:find("overlay") then
+    if type(v)=="table" then
+     pcall(function() v.Value=false end)
+     pcall(function() v.value=false end)
+     pcall(function() v.Enabled=false end)
+     pcall(function() v.enabled=false end)
+    elseif type(v)=="boolean" then
+     pcall(function() Lib.Options[k]=false end)
+    end
+    found=true
+   end
+  end
+ end
+
+ if type(Lib.Config)=="table" then
+  for k,v in pairs(Lib.Config) do
+   local lk=string.lower(tostring(k))
+   if lk:find("keybind") and lk:find("overlay") then
+    if type(v)=="table" then
+     pcall(function() v.Value=false end)
+     pcall(function() v.value=false end)
+    elseif type(v)=="boolean" then
+     pcall(function() Lib.Config[k]=false end)
+    end
+    found=true
+   end
+  end
+ end
+
+ print("[Chain] keybind overlay disable attempt: "..(found and "ok" or "not found"))
+end
+
+Lib:Notify("Chain","Press P to toggle",4,"info")
 
 Lib:Category("COMBAT")
 local CT=win:Tab("Combat","sword")
@@ -1016,7 +906,7 @@ ss:Toggle("Infinite Stamina (Normal)",false,function(o)setNormalStam(o)end)
 ss:Toggle("Infinite Winchester",false,function(o)setWinchester(o)end)
 
 local ms=CT:Section("Menu","Left")
-ms:Button("Toggle Menu (Home)",function()Lib:Toggle()end)
+ms:Button("Toggle Menu (P)",function()Lib:Toggle()end)
 ms:Button("Unload Chain",function()Lib:Destroy()end)
 
 Lib:Category("EXPLOITS")
