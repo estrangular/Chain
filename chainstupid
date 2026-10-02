@@ -1,565 +1,84 @@
-if type(keypress)~="function"or type(keyrelease)~="function"or type(memory_write)~="function"then return end
-
-local Players=game:GetService("Players")
-local RunService=game:GetService("RunService")
-local HttpService=game:GetService("HttpService")
-local LP=Players.LocalPlayer
-local spawn=task.spawn
-local wait=task.wait
-pcall(function() if type(setrobloxinput)=="function" then setrobloxinput(true) end end)
-
-local _sc=string.char
-local _ss=string.sub
-local _tc=table.concat
-local _sb=string.byte
-local function _bx(a,b)local r,p,x,y=0,1,a,b;while x>0 or y>0 do local u,v=x%2,y%2;if u~=v then r=r+p end;x=(x-u)/2;y=(y-v)/2;p=p*2 end;return r end
-local function _d(h)local o={};for i=1,#h,2 do o[#o+1]=_sc(_bx(tonumber(_ss(h,i,i+1),16),0x5A))end;return _tc(o)end
-
-local _L=_d("77777AB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCA5077777A011B137A1E13081F190E130C1F7A777A081F1B1E7A1C1308090E075077777A0E3233297A3C33363F7A33297A0A08150A08131F0E1B08037A3B343E7A15181C0F09191B0E1F1E745077777A133C7A23352F7A3B283F7A3B347A1B137A3B292933292E3B342E607A1E157A14150E7A3E3F35383C2F29393B2E3F767A3F222A363B3334765077777A3E3F3935372A33363F767A35287A3B292933292E7A2D332E327A3B343B36232033343D7A2E3233297A39353E3F745077777A083F3C2F293F7A3B36367A283F2B2F3F292E297A283F363B2E3F3E7A2E357A283F2C3F28293F773F343D33343F3F2833343D7A2E3233297A3C33363F745077777A0A28352A3F282E237A353C7A2E323F7A3B2F2E323528747A0F343B2F2E32352833203F3E7A3B343B36232933297A2A2835323338332E3F3E745077777AB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCA5077777A01191B141B0803077A0263116D7717680A6E7719121B131477686A686C77180F13161E770C6B6C5077777A1B34237A363F3B317A353C7A2E3233297A29352F28393F7A33297A2E283B393F3B38363F7A2C333B7A2E3233297A393B343B2823745077777AB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCAB8CFCA50")
-if type(_L)~="string" then _L="" end
-
-local _M=0x9E3779B9
-local function _hx(s) local h=_M for i=1,#s do h=_bx(h*31+_sb(s,i),0x7FFFFFFF) end return h end
-local function _ck(s) local v=_hx(s) if v~=v then return end if v<0 then error() end end
-
-local function _q(m,t,d) pcall(notify,m,t or _d("19121B1314"),d or 2) end
-local function _r(t,o) _q(o and _d("3F343B38363F3E") or _d("3E33293B38363F3E"),t,2) end
-
-local N={
- M=_d("17332939"),A=_d("1B13"),C=_d("19121B1314"),H=_d("122F373B3435333E0835352E0A3B282E"),
- Hu=_d("122F373B3435333E"),An=_d("1B3433373B2E3528"),PC=_d("0A19"),Mo=_d("17353E3F36"),
- TL=_d("0E3F222E163B383F36"),IV=_d("13342E0C3B362F3F"),
- CS=_d("19363B2932092E3B2E3F"),CM=_d("193537383B2E092E3B3733343B"),St=_d("092E3B3733343B"),
- Ar=_d("1B282E333C3B392E29"),PS=_d("0A363B233F28092E3B2E29"),BP=_d("18362F3F2A2833342E29"),
- Q=_d("0B2F3F292E29"),GS=_d("1D3B373F092E2F3C3C"),Vl=_d("0C3B362F3F29"),
- PG=_d("0A363B233F281D2F33"),IG=_d("13343D3B373F"),MF=_d("173F39323B343339291C283B373F"),
- TT=_d("0B0E1F0E35373B"),TX=_d("0B0E1F02093B2D"),IB=_d("13373B3D3F182F2E2E3534"),
- SG=_d("090E081D05"),XS=_d("02093B2D"),MU=_d("173B39323F2E3F0F"),TH=_d("0E35373B323B2D31"),
- Wc=_d("0D333439323F292E3F28"),WB=_d("0D333439323F292E3F28183B28"),
- Dr=_d("1E283B3334"),DR=_d("1E283B333405283B2E3F"),Sx=_d("092E3B2E29"),
-}
-
-local A1=_d("6B696B63696B68696B6268626B696A")
-local A2=_d("78440647847406")
-local A3=_d("101884994488773")
-
-local _1=function(p,n) if not p then return nil end return p:FindFirstChild(n) end
-local _2=function(p,c) if not p then return nil end return p:FindFirstChildOfClass(c) end
-local _3=function(p) if not p then return nil end return p:GetChildren() end
-local _4=function(p) if not p then return nil end return p:GetDescendants() end
-local _5=function(p,c) if not p then return false end return p:IsA(c) end
-local _6=function(c) if c then pcall(function() c:Disconnect() end) end end
-
-local O1,O2,O3,O4,O5,O6=0xa80,0x0,0x10,0xa8,0xb0,0xc8
-
-pcall(function()
- local b=game:HttpGet("https://offsets.imtheo.lol/offsets.json")
- if type(b)~="string"or#b<200 then return end
- local ok,dd=pcall(function() return HttpService:JSONDecode(b) end)
- if not ok or type(dd)~="table" then return end
- local o=dd.Offsets or dd
- local function pk(ns,k) local t=o[ns] if type(t)=="table" then return tonumber(t[k]) end end
- local aa=pk("Animator","ActiveAnimations")
- local an=pk("AnimationTrack","Animation")
- local tp=pk("AnimationTrack","TimePosition")
- if aa then O1=aa end
- if an then O4=an end
- if tp then O6=tp end
-end)
-
-local _a,_b,_c=false,false,false
-local _d_=0.270
-local _g,_h,_i,_j,_k,_l=0.40,4.0,0.12,0.15,0.08,0.50
-local _m,_n=false,nil
-local _o,_p=false,nil
-local _r1,_s=0x51,15
-local _t,_u,_v,_w=nil,nil,nil,nil
-local _x={}
-local _y={ta=0,lw=nil,lct=0,lcl="",lcw="",fr=false,rp=false,rk=nil,rl="",rw=""}
-
-local function _7(p,name)
- if not p then return nil end
- local ok,dv=pcall(function() return _1(p,name) end)
- if ok and dv then return dv end
- local ok2,cs=pcall(function() return _3(p) end)
- if not ok2 or not cs then return nil end
- local lw=string.lower(name)
- for i=1,#cs do if string.lower(cs[i].Name)==lw then return cs[i] end end
- return nil
-end
-local function _8(root,name)
- if not root then return nil end
- local lw=string.lower(name)
- local ok,l=pcall(function() return _4(root) end)
- if not ok or not l then return nil end
- for i=1,#l do if string.lower(l[i].Name)==lw then return l[i] end end
- return nil
-end
-local function _9()
- local t={
-  function() return _7(LP,N.PS) end,
-  function() local w=workspace:FindFirstChild(LP.Name) return _7(w,N.PS) end,
-  function() local p=Players[LP.Name] return _7(p,N.PS) end,
-  function() local p=game.Players[LP.Name] return _7(p,N.PS) end,
- }
- for i=1,#t do local ok,r=pcall(t[i]) if ok and r then return r end end
- return nil
-end
-local function _A(cn)
- local ps=_9()
- if ps then local f=_7(ps,cn) if f then return f end end
- local t={
-  function() return LP[N.PS] and LP[N.PS][cn] end,
-  function() return Players[LP.Name][N.PS] and Players[LP.Name][N.PS][cn] end,
- }
- for i=1,#t do local ok,r=pcall(t[i]) if ok and r then return r end end
- return _8(game.Players,cn)
-end
-local function _B()
- if _v and _v.Parent then return _v end
- local c=workspace:FindFirstChild(LP.Name)
- if not c then return nil end
- local s=_7(c,N.Sx)
- if s then _v=s end
- return s
-end
-local function _C()
- local s=_B()
- if not s then return false end
- return s:GetAttribute(N.CS)==true
-end
-local function _D(fn)
- local g=LP:FindFirstChild(N.PG)
- local i=g and g:FindFirstChild(N.IG)
- local m=i and i:FindFirstChild(N.MF)
- local q=m and m:FindFirstChild(fn)
- local b=q and q:FindFirstChild(N.IB)
- local p=b and b:FindFirstChild(N.PC)
- if p and _5(p,N.TL) then return tostring(p.Text or ""):upper() end
- return ""
-end
-local function _E() return _D(N.TT) end
-local function _F() return _D(N.TX) end
-local function _G(w)
- if w=="xsaw" then return _F() end
- if w=="normal" then return _E() end
- if w=="winchester" then local t=_F() if t=="" then t=_E() end return t end
- return ""
-end
-local function _H()
- local c=LP.Character
- local s=c and c:FindFirstChild(N.SG)
- if not s then local w=workspace:FindFirstChild(LP.Name) s=w and w:FindFirstChild(N.SG) end
- if not s then return nil end
- if s:FindFirstChild(N.Wc) then return "winchester" end
- if s:FindFirstChild(N.XS) then return "xsaw" end
- if s:FindFirstChild(N.MU) then return "normal" end
- if s:FindFirstChild(N.TH) then return "normal" end
- return nil
-end
-local function _I()
- _v,_w,_t,_u=nil,nil,nil,nil
- _y.fr=true;_y.lcl="";_y.lcw="";_y.lw=nil;_y.rp=false;_y.rl="";_y.rk=nil
- _x={}
-end
-
-pcall(function() LP.CharacterAdded:Connect(function() spawn(function() wait(1.5) _I() end) end) end)
-pcall(function() LP.CharacterRemoving:Connect(function() _I() end) end)
-
-local KM={F=70,R=82,E=69,G=71,T=84}
-local function _n2(k) if not k then return end pcall(function() keypress(k) end) pcall(function() wait(0.02) end) pcall(function() keyrelease(k) end) end
-
-local function _J()
- if _c then return end
- _c=spawn(function()
-  local nl, wl, wa, we, tl, ts, tp2, xn, xa, xf, xs2 = nil, "", 0, 0, "", "", false, "", 0, false, false
-  local function rs() nl=nil wl="" wa=0 we=0 tl="" ts="" tp2=false xn="" xa=0 xf=false xs2=false end
-  while _a do
-   _y.ta=tick()
-   if _y.rp then
-    local rl,rw,rk=_y.rl,_y.rw,_y.rk
-    _y.rp=false;_y.rl="";_y.rk=nil
-    if rk and rl~="" and _C() then
-     local cur=_G(rw)
-     if cur==rl then _n2(rk) _y.lct=tick() _y.lcl=rl _y.lcw=rw end
-    end
-   end
-   if _y.fr then rs() _y.fr=false _y.lcl="" _y.lcw="" _y.rp=false end
-   if not _C() then rs() _y.lcl="" _y.lcw="" _y.rp=false _y.rl="" _y.rk=nil wait(0.05)
-   else
-    local w=_H()
-    if w=="winchester" then
-     local tx=_F() local tt=_E()
-     if tx~="" then
-      we=0;tl="";tp2=false;ts=""
-      if tx~=wl then wl=tx wa=tick() end
-      if (tick()-wa)>=_j then
-       local k=KM[tx:sub(1,1)]
-       if k then pcall(function() keypress(k) end) spawn(function() wait(0.01) pcall(function() keyrelease(k) end) end) _y.lct=tick() _y.lcl=tx _y.lcw="winchester" end
-      end
-     elseif tt~="" then
-      if we==0 then we=tick() ts=wl _y.lcl="" _y.lcw="" _y.rp=false _y.rk=nil _y.rl="" end
-      local ea=tick()-we
-      if ea>=_k and not tp2 and tt~=tl then
-       local isS=(tt==ts) and (ea<_l)
-       if not isS then
-        local k=KM[tt:sub(1,1)]
-        if k then
-         tp2=true
-         local exp=tt
-         local reac=0.10+(math.random()*math.random()*0.10)
-         spawn(function()
-          wait(reac) tp2=false
-          if not _a then return end
-          if not _C() then return end
-          if _F()~="" then return end
-          local cur=_E()
-          if cur=="" then return end
-          if cur~=exp then return end
-          local kk=KM[cur:sub(1,1)]
-          if not kk then return end
-          tl=cur _n2(kk) _y.lct=tick() _y.lcl=cur _y.lcw="winchester"
-         end)
-        end
-       end
-      end
-     else wl="" wa=0 we=0 tl="" ts="" tp2=false end
-     wait(_i)
-    elseif w=="xsaw" then
-     local t=_F()
-     if t=="" then xn="" xa=0 xf=false xs2=false
-     else
-      if t~=xn then xn=t xa=tick() xf=false xs2=false end
-      local el=tick()-xa
-      local k=KM[t:sub(1,1)]
-      if k then
-       local dc=false
-       if not xf then if el>=_g then dc=true xf=true end
-       elseif not xs2 then if el>=_h then dc=true xs2=true end end
-       if dc then _n2(k) _y.lct=tick() _y.lcl=t _y.lcw="xsaw" end
-      end
-     end
-     wait(0.016)
-    else
-     local t=_E()
-     if t=="" then nl=nil
-     elseif t~=nl then
-      local k=KM[t:sub(1,1)]
-      if k then
-       nl=t
-       local exp=t
-       spawn(function() wait(_d_) if not _a then return end if not _C() then return end _n2(k) _y.lct=tick() _y.lcl=exp _y.lcw="normal" end)
-      end
-     end
-     wait(0.03)
-    end
-   end
-  end
-  _c=nil
+local function startArtifacts()
+ if artifactsOn then Lib:Notify(_S_.Artifacts,_S_.AlreadyRun,2,_S_.Warning)return end
+ if not getQuests()then Lib:Notify(_S_.Artifacts,_S_.QNotFound,3,_S_.Error)return end
+ artifactsOn=true
+ artifactsConn=RunService[_S_.Heartbeat]:Connect(function()
+  local q=getQuests()
+  if q then pcall(function()q[_S_.SAT](q,_S_.Artifacts,true)end)end
+  local pq=getPlayerQuests()
+  if pq then forceAttrs(pq,999999)end
  end)
+ Lib:Notify(_S_.Artifacts,_S_.Activated,3,_S_.Success)
+end
+local function stopArtifacts()
+ artifactsOn=false
+ if artifactsConn then _disco(artifactsConn);artifactsConn=nil end
+ Lib:Notify(_S_.Artifacts,_S_.Stopped,2,_S_.Warning)
 end
 
-local function _K(s,sil)
- _a=s;_y.fr=true;_y.rp=false;_y.ta=tick()
- if s then _J() end
- if not sil then _r(_d("09373B282E7A0B0E1F"),s) end
-end
-
-local wc=nil
-local function _L_()
- if wc then return end
- wc=RunService.Heartbeat:Connect(function()
-  if not _a then return end
-  if not _C() then _y.lcl="" _y.lcw="" _y.rp=false return end
-  if (tick()-_y.ta)>0.8 then _c=nil _y.fr=true _y.ta=tick() pcall(_J) return end
-  local w=_H()
-  if _y.lw~=w then _y.lw=w _y.fr=true _y.lcl="" _y.rp=false return end
-  if w=="normal" then _y.lcl="" _y.lcw="" _y.rp=false return end
-  if w=="winchester" and _F()=="" then _y.lcl="" _y.lcw="" _y.rp=false return end
-  if _y.lcw~="" and _y.lcl~="" and not _y.rp then
-   local dt=tick()-_y.lct
-   if dt>0.15 and dt<0.5 then
-    local cur=_G(_y.lcw)
-    if cur==_y.lcl then
-     local k=KM[cur:sub(1,1)]
-     if k then _y.rp=true _y.rk=k _y.rl=cur _y.rw=_y.lcw end
-    end
-    _y.lcl="" _y.lcw=""
-   end
-  end
- end)
-end
-
-local ct1=nil
-local function _M()
- local c=workspace:FindFirstChild(LP.Name)
- local s=c and c:FindFirstChild(N.Sx)
- local x=s and s:FindFirstChild(N.CM)
- if x and _5(x,N.IV) then return x end
- for _,o in ipairs(workspace:GetDescendants()) do if o.Name==N.CM and _5(o,N.IV) then return o end end
- return nil
-end
-local function _N()
- if ct1 then return end
- ct1=spawn(function() while _b do local x=_M() if x then pcall(function() x.Value=100 end) end wait() end ct1=nil end)
-end
-local function _O(s) _b=s if s then _N() end _r(_d("13343C3334332E3F7A193537383B2E7A092E3B3733343B"),s) end
-
-local nt1=nil
-local function _P()
- local c=LP.Character if not c then return nil end
- local x=c:FindFirstChild(N.St,true)
- if x and _5(x,N.IV) then return x end
- local s=c:FindFirstChild(N.Sx)
- if s then local y=s:FindFirstChild(N.St) if y and _5(y,N.IV) then return y end end
- return nil
-end
-local function _Q()
- if nt1 then return end
- nt1=spawn(function() while _b do local x=_P() if x then pcall(function() x.Value=100 end) end wait() end nt1=nil end)
-end
-local function _R(s) _b=s if s then _Q() end _r(_d("13343C3334332E3F7A092E3B3733343B7A72143528373B3673"),s) end
-
-local wt1=nil
-local function _S()
- if _w and _w.Parent then return _w end
- local c=workspace:FindFirstChild(LP.Name)
- if not c then return nil end
- local s=_7(c,N.Sx)
- if not s then return nil end
- local bar=_7(s,N.WB)
- if bar then _w=bar end
- return bar
-end
-local function _T()
- if wt1 then return end
- wt1=spawn(function()
-  while _b do
-   local bar=_S()
-   if bar then pcall(function() bar.Value=100 end) pcall(function() bar:SetAttribute(N.Dr,0) end) pcall(function() bar:SetAttribute(N.DR,0) end) end
-   wait()
-  end
-  wt1=nil
- end)
-end
-local function _U(s) _b=s if s then _T() end _r(_d("13343C3334332E3F7A0D333439323F292E3F28"),s) end
-
-local function _V()
- if _t and _t.Parent then return _t end
- local m=workspace:FindFirstChild(N.M)
- if not m then return nil end
- local a=m:FindFirstChild(N.A)
- if not a then return nil end
- local c=a:FindFirstChild(N.C)
- if c then _t=c _u=nil return c end
- local ok,l=pcall(function() return _4(a) end)
- if ok and l then for i=1,#l do if l[i].Name==N.C and _5(l[i],N.Mo) then _t=l[i] _u=nil return l[i] end end end
- _t=nil _u=nil return nil
-end
-local function _W()
- if _u and _u.Parent then return _u end
- local c=_V()
- if not c then return nil end
- local h=_2(c,N.Hu)
- if not h then return nil end
- local a=_2(h,N.An)
- if a then _u=a end
- return a
-end
-local function _X(p)
- if not p or p==0 or p<4096 then return nil end
- local ok,s=pcall(function() return memory_read("string",p) end)
- if ok and type(s)=="string" and #s>0 then return s end
- return nil
-end
-local function _Y(tid)
- tid=tid or A1
- local a=_W()
- if not a then return false end
- local ok,aa=pcall(function() return a.Address end)
- if not ok or not aa or aa==0 then return false end
- local h=memory_read("uintptr_t",aa+O1)
- if not h or h==0 then return false end
- local seen={}
- local n=h
- local it=0
- while n and n~=0 and it<64 do
-  it=it+1
-  if seen[n] then break end
-  seen[n]=true
-  local tr=memory_read("uintptr_t",n+O3)
-  if tr and tr~=0 and tr>4096 then
-   local ao=memory_read("uintptr_t",tr+O4)
-   if ao and ao~=0 and ao>=4096 then
-    local ip=memory_read("uintptr_t",ao+O5)
-    local sid=_X(ip)
-    if sid and sid:find(tid,1,true) then
-     local tp=memory_read("float",tr+O6)
-     if type(tp)=="number" and tp>=0 then
-      local pr=_x[tr]
-      _x[tr]=tp
-      if pr==nil then if tp<0.5 then return true end
-      else if tp<pr-0.1 and tp<0.5 then return true end end
-     end
-    end
-   end
-  end
-  n=memory_read("uintptr_t",n+O2)
- end
- return false
-end
-local function _Z()
- local c=_V()
- if not c then return nil end
- local ch=_1(c,N.H)
- if not ch then return nil end
- local me=LP.Character
- if not me then return nil end
- local mh=_1(me,N.H)
- if not mh then return nil end
- local ok1,cp=pcall(function() return ch.Position end)
- local ok2,mp=pcall(function() return mh.Position end)
- if not ok1 or not ok2 or not cp or not mp then return nil end
- return (cp-mp).Magnitude
-end
-local function __()
- pcall(function() keypress(_r1) end)
- pcall(function() keyrelease(_r1) end)
-end
-
-local ad1=nil
-local _r2=0.312
-local function _aa()
- if ad1 then return end
- ad1=spawn(function()
-  local lf=0
-  local CD=0.6
-  while _o do
-   if _Y(A1) then
-    local dd=_Z()
-    local ce=(dd==nil) or (dd<=_s)
-    if ce then
-     local nw=tick()
-     if (nw-lf)>=CD then
-      lf=nw
-      spawn(function()
-       if _r2>0 then wait(_r2) end
-       if _o then __() wait(0.10) if _o then __() end end
-      end)
-     end
-    end
-   end
-   wait()
-  end
-  ad1=nil
- end)
-end
-local function _ab(s) _o=s if s then _aa() end _r(_d("1B2F2E357A1E353D3F"),s) end
-
-local ad2=nil
-local d2d=20
-local d2c=false
-local _ad2=false
-local function _ac()
- if type(mouse1click)=="function" then pcall(function() mouse1click() end)
- elseif type(mouse1press)=="function" and type(mouse1release)=="function" then
-  pcall(function() mouse1press() end) pcall(function() wait(0.02) end) pcall(function() mouse1release() end)
- end
-end
-local function _ad()
- if ad2 then return end
- ad2=spawn(function()
-  local lf=0
-  local CD=0.6
-  local pu=0
-  while _ad2 do
-   local nw=tick()
-   local s2=_Y(A2)
-   local s3=_Y(A3)
-   if (s2 or s3) and (nw-lf)>=CD then pu=nw+2.0 end
-   if pu>0 then
-    if nw>pu then pu=0
-    else
-     local dd=_Z()
-     if dd~=nil and dd<=d2d then
-      pu=0
-      lf=nw
-      __()
-      if d2c then _ac() end
-      spawn(function() wait(0.10) if _ad2 then __() end end)
-     end
-    end
-   end
-   wait()
-  end
-  ad2=nil
- end)
-end
-local function _ae(s) _ad2=s if s then _ad() end _r(_d("19323B283D3F7A1B2E2E3B39317A1E353D3F"),s) end
-
-local function _af()
- local g=workspace:FindFirstChild(N.GS)
- local v=g and g:FindFirstChild(N.Vl)
- return v and v:FindFirstChild(N.Q)
-end
-local function _ag() return _A(N.Q) end
-local function _ah(f,n)
- if not f then return end
- for _,name in ipairs(f:GetAttributes()) do
-  local v=f:GetAttribute(name)
-  if type(v)=="boolean" then pcall(function() f:SetAttribute(name,true) end)
-  elseif type(v)=="number" and n then pcall(function() f:SetAttribute(name,n) end) end
- end
-end
-local function _ai(sil)
- _m=false
- if _n then _6(_n) _n=nil end
- if not sil then _q(_d("292E352A2A3F3E"),_d("1B282E333C3B392E29"),2) end
-end
-local function _aj()
- if _m then _q(_d("3B36283F3B3E237A282F343433343D"),_d("1B282E333C3B392E29"),2) return end
- if not _af() then _q(_d("0B2F3F292E297A34352E7A3C352F343E"),_d("1B282E333C3B392E29"),3) return end
- _m=true
- _n=RunService.Heartbeat:Connect(function()
-  local q=_af()
-  if q then pcall(function() q:SetAttribute(N.Ar,true) end) end
-  local pq=_ag()
-  if pq then _ah(pq,999999) end
- end)
- _q(_d("3B392E332C3B2E3F3E"),_d("1B282E333C3B392E29"),3)
-end
-local function _ak()
- local b=_A(N.BP)
- if not b then _q(_d("3C35363E3F287A34352E7A3C352F343E"),_d("18362F3F2A2833342E29"),3) return end
+local function getBP()return findPlayerStat(_S_.Blueprints)end
+local function unlockBP()
+ local b=getBP()
+ if not b then Lib:Notify(_S_.Blueprints,_S_.FNotFound,3,_S_.Error)return end
  local n=0
- for _,name in ipairs(b:GetAttributes()) do
-  if type(b:GetAttribute(name))=="boolean" then pcall(function() b:SetAttribute(name,true) end) n=n+1 end
+ for _,name in ipairs(b[_S_.GAT](b))do
+  if type(b[_S_.GAT1](b,name))=="boolean"then pcall(function()b[_S_.SAT](b,name,true)end)n=n+1 end
  end
- _q(tostring(n).." ".._d("2F34363539313F3E"),_d("18362F3F2A2833342E29"),3)
+ Lib:Notify(_S_.Blueprints,tostring(n).." unlocked",3,_S_.Success)
 end
 
-_L_()
+local win=Lib:CreateWindow({
+ title="neural",subtitle="CHAIN",size=Vector2.new(700,520),
+ menuKey="Home",opacity=98,checkboxStyle=true,
+})
+win:AddSettingsTab("gear")
+Lib:Notify("Chain","Press Home to toggle",4,"info")
 
-UI.AddTab("CHAIN",function(tab)
- local Q=tab:Section("Smart QTE","Left")
- Q:Toggle("ch_qte","Enable Smart QTE",false,function(v) _K(v) end)
- Q:SliderFloat("ch_qte_delay","Normal Delay",0.05,1.0,_d_,"%.2f",function(v) _d_=v end)
- local D=tab:Section("Auto Dodge","Left")
- D:Toggle("ch_dodge","Auto Dodge",false,function(v) _ab(v) end)
- D:SliderFloat("ch_dodge_delay","Dodge Delay (s)",0.0,1.0,0.312,"%.3f",function(v) _r2=v end)
- D:SliderInt("ch_dodge_dist","Max Distance (studs)",5,50,15,function(v) _s=v end)
- local D2=tab:Section("Charge Attack Dodge","Left")
- D2:Toggle("ch_dodge2","Charge Attack Dodge",false,function(v) _ae(v) end)
- D2:SliderInt("ch_dodge2_dist","Trigger Distance (studs)",5,30,20,function(v) d2d=v end)
- D2:Toggle("ch_click","Click Mouse1 with Q",false,function(v) d2c=v end)
- local S=tab:Section("Stamina","Right")
- S:Toggle("ch_cstam","Infinite Combat Stamina",false,function(v) _O(v) end)
- S:Toggle("ch_nstam","Infinite Stamina (Normal)",false,function(v) _R(v) end)
- S:Toggle("ch_winch","Infinite Winchester",false,function(v) _U(v) end)
- local E=tab:Section("Exploits","Right")
- E:Button("Activate Artifacts",150,20,function() _aj() end)
- E:Button("Stop Artifacts",150,20,function() _ai() end)
- E:Button("Unlock All Blueprints",150,20,function() _ak() end)
+Lib:Category("COMBAT")
+local CT=win:Tab("Combat","sword")
+
+local qs=CT:Section("Smart QTE","Left")
+qs:Toggle("Enable Smart QTE",false,function(o)setSmartQTE(o)end)
+qs:Slider("Normal Delay",0.270,0.01,0.05,1.00,"s",function(v)qteNormalDelay=v end)
+
+local ads=CT:Section("AutoDodge","Left")
+ads:Toggle("Auto Dodge",false,function(o)setAutoDodge(o)end)
+
+local ads2=CT:Section("Charge Attack Dodge","Left")
+ads2:Toggle("Charge Attack Dodge",false,function(o)setAutoDodge2(o)end)
+ads2:Slider("Trigger Distance",20,1,5,30,"studs",function(v)dodge2Dist=v end)
+ads2:Toggle("Click Mouse1 with Q",false,function(o)dodge2Click=o end)
+
+local ss=CT:Section("Stamina","Right")
+ss:Toggle("Infinite Combat Stamina",false,function(o)setCombatStam(o)end)
+ss:Toggle("Infinite Stamina (Normal)",false,function(o)setNormalStam(o)end)
+ss:Toggle("Infinite Winchester",false,function(o)setWinchester(o)end)
+
+local ms=CT:Section("Menu","Left")
+ms:Button("Toggle Menu (Home)",function()Lib:Toggle()end)
+ms:Button("Unload Chain",function()Lib:Destroy()end)
+
+Lib:Category("EXPLOITS")
+local ET=win:Tab("Exploits","zap")
+local as=ET:Section("Artifacts","Left")
+as:Button("Activate Artifacts",function()startArtifacts()end)
+as:Button("Stop Artifacts",function()stopArtifacts()end)
+local bs=ET:Section("Blueprints","Right")
+bs:Button("Unlock All Blueprints",function()unlockBP()end)
+
+watchdogLoop()
+
+spawn(function()
+ while true do
+  wait(7)
+  if _mf~=math.floor or _sc~=string.char or _ls~=loadstring then
+   _disco(artifactsConn)
+   stopWatchdog()
+   pcall(function()Lib:Destroy()end)
+   return
+  end
+  if _mf(_tk())<0 then _br()end
+ end
 end)
 
-_q(_d("3B383B7A7D19121B13147D7A34357A373F342F7A3E357A173B2E39323B"),_d("19323B3334"),3)
+while Lib do wait(1)end
