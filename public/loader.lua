@@ -1,3 +1,4 @@
+-- love fenix ♡♡
 local _mf=math.floor;local _sc=string.char;local _sb=string.byte;local _ss=string.sub;local _tc=table.concat;local _ls=loadstring;local _wf=writefile;local _rf=readfile;local _if=isfile;local _df=delfile;local _oc=os.clock;local _tk=tick;local _rd=math.random;local _tw=task.wait
 local function _bx(a,b)local r,p,x,y=0,1,a,b;while x>0 or y>0 do local u,v=x%2,y%2;if u~=v then r=r+p end;x=(x-u)/2;y=(y-v)/2;p=p*2 end;return r end
 local function _d(h)local o={};for i=1,#h,2 do o[#o+1]=_sc(_bx(tonumber(_ss(h,i,i+1),16),0x5A))end;return _tc(o)end
