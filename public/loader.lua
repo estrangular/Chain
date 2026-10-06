@@ -203,7 +203,6 @@ local OFF_NODE_TRACK=0x10
 local OFF_TRACK_ANIM=O.AnimationTrack.Animation or 0xa8
 local OFF_TRACK_TIMEPOS=O.AnimationTrack.TimePosition or 0xc8
 local OFF_ANIM_ANIMID=0xb0
-print("[Chain] Offsets source: ".._offSource.." | Roblox: "..tostring(O.ClientVersion or "?"))
 
 local combatStamOn,normalStamOn=false,false
 local winchesterOn=false
@@ -880,7 +879,6 @@ do
   end
  end
 
- print("[Chain] keybind overlay disable attempt: "..(found and "ok" or "not found"))
 end
 
 Lib:Notify("Chain","Press P to toggle",4,"info")
